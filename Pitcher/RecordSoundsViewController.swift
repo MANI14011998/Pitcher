@@ -20,12 +20,18 @@ class RecordSoundsViewController: UIViewController,AVAudioRecorderDelegate{
         stopBtn.isEnabled=false
         // Do any additional setup after loading the view.
     }
+    
+    func updateUI(_ isRecording: Bool)
+       {
+           recordBtn.isEnabled = !isRecording
+           stopBtn.isEnabled = isRecording
+           tapStartLbl.text = isRecording ? "Recording in Progress" : "Tab to Record"
+          
+       }
 
 
     @IBAction func recordButtonPreesed(_ sender: UIButton) {
-        tapStartLbl.text="Recording is Progress"
-        stopBtn.isEnabled=true
-        recordBtn.isEnabled=false
+        updateUI(true)
         let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true)[0] as String
            let recordingName = "recordedVoice.wav"
            let pathArray = [dirPath, recordingName]
@@ -42,9 +48,8 @@ class RecordSoundsViewController: UIViewController,AVAudioRecorderDelegate{
         
     }
     @IBAction func stopButtonPressed(_ sender: UIButton) {
-        tapStartLbl.text="Tap to Start!"
-        stopBtn.isEnabled=false
-        recordBtn.isEnabled=true
+        
+        updateUI(false)
         audioRecorder.stop()
         let audioSession = AVAudioSession.sharedInstance()
         try! audioSession.setActive(false)
@@ -53,9 +58,8 @@ class RecordSoundsViewController: UIViewController,AVAudioRecorderDelegate{
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if flag{
         performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
-            print("yo")
         }else{
-            print("no")
+             print("Recording was not successful")
         }
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
